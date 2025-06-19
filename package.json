@@ -1,0 +1,34 @@
+{
+  "name": "messenger",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+
+    "build:sdk": "turbo run build --filter=@vamspace/sdk",
+    "build:core": "turbo run build --filter=@vamspace/core",
+    "build:modules": "turbo run build --filter='./packages/modules/*'",
+
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "stream-browserify": "^3.0.0",
+    "turbo": "^2.4.4",
+    "prettier": "^3.5.3",
+    "eslint": "^9.23.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "description": "",
+  "keywords": [],
+  "author": "Vadym Kopachev",
+  "packageManager": "pnpm@10.3.0+sha512.ee592eda8815a8a293c206bb0917c4bb0ff274c50def7cbc17be05ec641fc2d1b02490ce660061356bd0d126a4d7eb2ec8830e6959fb8a447571c631d5a2442d"
+}
