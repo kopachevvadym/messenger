@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { loadChatMessages, loadChats } from '@/lib/data';
+import Sidebar from '@/ui/sidebar';
 
 export default function ChatPage() {
   const router = useRouter();
@@ -10,23 +10,23 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
-  const [chats, setChats] = useState([]);
   const [inviteName, setInviteName] = useState('');
   const [inviteLink, setInviteLink] = useState('');
 
-  // Load chats this user is in
-  useEffect(() => {
-    if (!userId) return;
-
-    loadChats(userId);
-  }, [userId]);
 
   // Load messages for current chat
   useEffect(() => {
     if (!chatId) return;
 
-    loadChatMessages(chatId)
-      .then(data => setMessages(data));
+    supabase
+      .from('messages')
+      .select('id, content, created_at, user_id, users ( name )')
+      .eq('chat_id', chatId)
+      .order('created_at', { ascending: true })
+      .then(({ data, error }) => {
+        if (error) console.error('Fetch error:', error);
+        else setMessages(data);
+      });
 
     const channel = supabase
       .channel('chat-room')
@@ -84,40 +84,11 @@ export default function ChatPage() {
     setInviteName('');
   };
 
-  const deleteChat = async (chat) => {
-    const confirmDelete = confirm(`Delete chat ${chat.id.slice(0, 6)}?`);
-    if (!confirmDelete) return;
-
-    await supabase.from('chats').delete().eq('id', chat.id);
-    setChats((prev) => prev.filter(c => c.id !== chat.id));
-    if (chat.id === chatId) {
-      router.push('/');
-    }
-  };
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       {/* Sidebar */}
-      <div style={{ width: '250px', borderRight: '1px solid #ccc', padding: '1rem' }}>
-        <h3>Chats</h3>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {chats.map(chat => (
-            <li
-              key={chat.id}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                deleteChat(chat);
-              }}
-            >
-              <Link href={`/chat/${chat.id}/user/${userId}`} style={{ textDecoration: 'none' }}>
-                <div style={{ padding: '8px 0', cursor: 'pointer', color: chat.id === chatId ? 'blue' : 'black' }}>
-                  Chat {chat.id.slice(0, 6)}
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Sidebar />
 
       {/* Main Chat Area */}
       <div style={{ flex: 1, padding: '1rem', display: 'flex', flexDirection: 'column' }}>
