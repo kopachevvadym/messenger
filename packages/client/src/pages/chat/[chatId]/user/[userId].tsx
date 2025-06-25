@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { loadChatMessages, loadChats } from '@/lib/data';
 
 export default function ChatPage() {
   const router = useRouter();
@@ -17,32 +18,15 @@ export default function ChatPage() {
   useEffect(() => {
     if (!userId) return;
 
-    const loadChats = async () => {
-      const { data, error } = await supabase
-        .from('chat_users')
-        .select('chat_id, chats ( id, created_at )')
-        .eq('user_id', userId);
-
-      if (error) console.error(error);
-      else setChats(data.map(c => c.chats));
-    };
-
-    loadChats();
+    loadChats(userId);
   }, [userId]);
 
   // Load messages for current chat
   useEffect(() => {
     if (!chatId) return;
 
-    supabase
-      .from('messages')
-      .select('id, content, created_at, user_id, users ( name )')
-      .eq('chat_id', chatId)
-      .order('created_at', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error('Fetch error:', error);
-        else setMessages(data);
-      });
+    loadChatMessages(chatId)
+      .then(data => setMessages(data));
 
     const channel = supabase
       .channel('chat-room')
