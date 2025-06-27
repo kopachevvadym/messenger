@@ -3,54 +3,16 @@ import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Sidebar from '@/ui/sidebar';
+import useMessages from '@/lib/hooks/use-messages';
 
 export default function ChatPage() {
   const router = useRouter();
   const { chatId, userId } = router.query;
 
-  const [messages, setMessages] = useState([]);
+  const { messages, sendMessage } = useMessages(chatId);
   const [text, setText] = useState('');
   const [inviteName, setInviteName] = useState('');
   const [inviteLink, setInviteLink] = useState('');
-
-
-  // Load messages for current chat
-  useEffect(() => {
-    if (!chatId) return;
-
-    supabase
-      .from('messages')
-      .select('id, content, created_at, user_id, users ( name )')
-      .eq('chat_id', chatId)
-      .order('created_at', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error('Fetch error:', error);
-        else setMessages(data);
-      });
-
-    const channel = supabase
-      .channel('chat-room')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
-        const newMessage = payload.new;
-
-        const { data: user } = await supabase
-          .from('users')
-          .select('name')
-          .eq('id', newMessage.user_id)
-          .single();
-
-        setMessages((prev) => [...prev, { ...newMessage, users: user }]);
-      })
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
-  }, [chatId]);
-
-  const sendMessage = async () => {
-    if (!text.trim()) return;
-    await supabase.from('messages').insert([{ chat_id: chatId, user_id: userId, content: text }]);
-    setText('');
-  };
 
   const inviteUser = async () => {
     if (!inviteName.trim() || !chatId) return;
@@ -125,7 +87,7 @@ export default function ChatPage() {
             style={{ flex: 1, padding: '0.5rem' }}
             placeholder="Type a message"
           />
-          <button onClick={sendMessage} style={{ marginLeft: '0.5rem' }}>Send</button>
+          <button onClick={() => sendMessage(text, userId)} style={{ marginLeft: '0.5rem' }}>Send</button>
         </div>
       </div>
     </div>
