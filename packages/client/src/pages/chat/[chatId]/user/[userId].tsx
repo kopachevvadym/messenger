@@ -48,46 +48,84 @@ export default function ChatPage() {
 
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Chat Area */}
-      <div style={{ flex: 1, padding: '1rem', display: 'flex', flexDirection: 'column' }}>
-        {/* Invite Section */}
-        <div style={{ marginBottom: '1rem' }}>
-          <input
-            value={inviteName}
-            onChange={e => setInviteName(e.target.value)}
-            placeholder="Enter user name to invite"
-            style={{ marginRight: '0.5rem' }}
-          />
-          <button onClick={inviteUser}>Invite</button>
+      <div className="flex-1 flex flex-col bg-white">
+        {/* Header with Invite Section */}
+        <div className="bg-white border-b border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <input
+              value={inviteName}
+              onChange={e => setInviteName(e.target.value)}
+              placeholder="Enter user name to invite"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <button
+              onClick={inviteUser}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+            >
+              Invite
+            </button>
+          </div>
           {inviteLink && (
-            <div style={{ marginTop: '0.5rem' }}>
-              Invite link: <a href={inviteLink}>{inviteLink}</a>
+            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <span className="text-sm text-green-700 font-medium">Invite link:</span>
+              <a
+                href={inviteLink}
+                className="ml-2 text-blue-600 hover:text-blue-800 underline break-all"
+              >
+                {inviteLink}
+              </a>
             </div>
           )}
         </div>
 
         {/* Message List */}
-        <div style={{ flex: 1, overflowY: 'auto', marginBottom: '1rem' }}>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.map((m) => (
-            <p key={m.id}>
-              <b>{m.users?.name || 'Unknown'}:</b> {m.content}
-            </p>
+            <div key={m.id} className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                {(m.users?.name || 'U')[0].toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold text-gray-900">
+                {m.users?.name || 'Unknown'}
+              </span>
+                  <span className="text-xs text-gray-500">
+                {new Date().toLocaleTimeString()}
+              </span>
+                </div>
+                <div className="bg-gray-50 rounded-lg px-3 py-2 text-gray-800">
+                  {m.content}
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Message Input */}
-        <div style={{ display: 'flex' }}>
-          <input
-            value={text}
-            onChange={e => setText(e.target.value)}
-            style={{ flex: 1, padding: '0.5rem' }}
-            placeholder="Type a message"
-          />
-          <button onClick={() => sendMessage(text, userId)} style={{ marginLeft: '0.5rem' }}>Send</button>
+        <div className="border-t border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <input
+              value={text}
+              onChange={e => setText(e.target.value)}
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Type a message..."
+            />
+            <button
+              onClick={() => sendMessage(text, userId)}
+              className="px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors font-medium flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>
