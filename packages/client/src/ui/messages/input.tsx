@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import useMessages from '@/lib/hooks/use-messages';
 
-export default function MessageInput({ chatId, userId }: { chatId: string; userId: string }) {
-  const { sendMessage } = useMessages(chatId);
+export default function MessageInput({ chatId, userId, sendMessage }: { chatId: string; userId: string, sendMessage: (text: string, userId: string) => void }) {
   const [text, setText] = useState('');
 
   return (

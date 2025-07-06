@@ -9,7 +9,7 @@ import MessageInput from '@/ui/messages/input';
 export default function ChatPage() {
   const router = useRouter();
   const { chatId, userId } = router.query;
-  const { messages } = useMessages(chatId);
+  const { messages, sendMessage } = useMessages(chatId);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -25,7 +25,7 @@ export default function ChatPage() {
         <MessageList messages={messages} />
 
         {/* Message Input */}
-        <MessageInput chatId={chatId as string} userId={userId as string} />
+        <MessageInput chatId={chatId as string} userId={userId as string} sendMessage={sendMessage} />
       </div>
     </div>
   );
