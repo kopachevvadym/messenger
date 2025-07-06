@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '@/lib/supabase';
-import Link from 'next/link';
 import Sidebar from '@/ui/sidebar';
 import useMessages from '@/lib/hooks/use-messages';
 import InviteHeader from '@/ui/invite/inviteHeader';
+import MessageList from '@/ui/messages/messageList';
 
 export default function ChatPage() {
   const router = useRouter();
@@ -12,8 +11,6 @@ export default function ChatPage() {
 
   const { messages, sendMessage } = useMessages(chatId);
   const [text, setText] = useState('');
-
-
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -26,28 +23,7 @@ export default function ChatPage() {
         <InviteHeader chatId={chatId as string} />
 
         {/* Message List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {messages.map((m) => (
-            <div key={m.id} className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                {(m.users?.name || 'U')[0].toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-gray-900">
-                {m.users?.name || 'Unknown'}
-              </span>
-                  <span className="text-xs text-gray-500">
-                {new Date().toLocaleTimeString()}
-              </span>
-                </div>
-                <div className="bg-gray-50 rounded-lg px-3 py-2 text-gray-800">
-                  {m.content}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <MessageList messages={messages} />
 
         {/* Message Input */}
         <div className="border-t border-gray-200 p-4">

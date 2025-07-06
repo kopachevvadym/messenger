@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
+export type Message = {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  users: { name: string };
+}
+
 export default function useMessages(chatId: string) {
   const [messages, setMessages] = useState([]);
 
